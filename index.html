@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orden y Lista de Libros para Celebración</title>
     <style>
-        /* Variables CSS para manejar los temas fácilmente */
+        /* Variables CSS */
         :root {
             --bg-body: #000000;
             --bg-container: #1a1a1a;
@@ -21,13 +21,13 @@
             --hover-highlight: #3a3a3a;
         }
 
-        /* Clase para el Modo Claro */
+        /* Variables Modo Claro */
         body.light-mode {
             --bg-body: #f0f2f5;
             --bg-container: #ffffff;
             --text-main: #333333;
             --text-muted: #666666;
-            --accent-color: #a00000; /* Un rojo ligeramente más vivo para fondo blanco */
+            --accent-color: #a00000;
             --input-bg: #f1f1f1;
             --accordion-bg: #e9e9e9;
             --panel-bg: #f9f9f9;
@@ -37,7 +37,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía más limpia */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0;
@@ -56,30 +56,74 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Botón de tema flotante o posicionado */
-        .theme-toggle {
+        /* --- ESTILOS DEL SWITCH (NUEVO) --- */
+        .switch-container {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            top: 25px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
         }
-        .theme-toggle:hover {
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333; /* Color base oscuro */
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "🌙"; /* Icono Luna por defecto */
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background-color: var(--bg-container);
+            transition: .4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Estilos cuando está activado (Modo Claro) */
+        input:checked + .slider {
             background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+            content: "☀️"; /* Icono Sol al cambiar */
+            background-color: #fff;
         }
 
         h1 {
             color: var(--accent-color);
             text-align: center;
-            margin-top: 10px;
+            margin-top: 20px; /* Un poco más de margen arriba para no chocar con el switch en móviles muy pequeños */
             margin-bottom: 30px;
             font-weight: 300;
             letter-spacing: 1px;
@@ -98,7 +142,7 @@
             border: 1px solid transparent;
             border-radius: var(--radius);
             font-size: 16px;
-            box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+            box-sizing: border-box;
             transition: all 0.3s ease;
         }
 
@@ -142,7 +186,7 @@
 
         .accordion.active::after {
             content: '-';
-            transform: rotate(180deg); /* Animación suave */
+            transform: rotate(180deg);
         }
 
         .panel {
@@ -153,7 +197,7 @@
             transition: max-height 0.4s ease-out;
             margin-bottom: 10px;
             border-radius: 0 0 var(--radius) var(--radius);
-            margin-top: -5px; /* Para unirlo visualmente al acordeón */
+            margin-top: -5px;
         }
 
         .panel ul {
@@ -173,7 +217,7 @@
         }
 
         .panel li:hover {
-            background-color: rgba(139, 0, 0, 0.1); /* Sutil rojo al pasar el mouse */
+            background-color: rgba(139, 0, 0, 0.1);
         }
 
         .panel li:last-child {
@@ -189,9 +233,36 @@
             font-size: 0.9em;
         }
 
-        footer {
+        /* --- BOTÓN MÁS PROYECTOS (NUEVO) --- */
+        .projects-btn-container {
             text-align: center;
             margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .projects-btn {
+            display: inline-block;
+            padding: 12px 35px;
+            border: 2px solid var(--accent-color);
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 50px; /* Ovalado */
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+
+        .projects-btn:hover {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(139, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
@@ -202,7 +273,12 @@
 <body>
 
 <div class="container">
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Modo Claro</button>
+    <div class="switch-container">
+        <label class="switch">
+            <input type="checkbox" id="themeToggleCheckbox" onchange="toggleTheme()">
+            <span class="slider round"></span>
+        </label>
+    </div>
     
     <h1>Orden y Lista de Libros</h1>
 
@@ -297,6 +373,10 @@
         </ul>
     </div>
 
+    <div class="projects-btn-container">
+        <a href="https://portfolio.inglucas.com.co/" target="_blank" class="projects-btn">Más Proyectos</a>
+    </div>
+
     <footer>
         <p>Lucas Molina</p>
     </footer>
@@ -321,12 +401,14 @@
     });
 
     function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        const btn = document.getElementById('themeBtn');
-        if (document.body.classList.contains('light-mode')) {
-            btn.textContent = "🌙 Modo Oscuro";
+        // Obtenemos el checkbox
+        const checkbox = document.getElementById('themeToggleCheckbox');
+        
+        // Si el checkbox está marcado, añadimos la clase light-mode, si no, la quitamos
+        if (checkbox.checked) {
+            document.body.classList.add('light-mode');
         } else {
-            btn.textContent = "☀️ Modo Claro";
+            document.body.classList.remove('light-mode');
         }
     }
 
