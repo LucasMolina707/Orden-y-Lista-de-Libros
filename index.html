@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden y Lista de Libros para Celebración</title>
+    <style>
+        /* Variables CSS para manejar los temas fácilmente */
+        :root {
+            --bg-body: #000000;
+            --bg-container: #1a1a1a;
+            --text-main: #ffffff;
+            --text-muted: #bbbbbb;
+            --accent-color: #8b0000;
+            --input-bg: #333333;
+            --accordion-bg: #2a2a2a;
+            --panel-bg: #222222;
+            --border-color: #444444;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            --radius: 8px;
+            --hover-highlight: #3a3a3a;
+        }
+
+        /* Clase para el Modo Claro */
+        body.light-mode {
+            --bg-body: #f0f2f5;
+            --bg-container: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --accent-color: #a00000; /* Un rojo ligeramente más vivo para fondo blanco */
+            --input-bg: #f1f1f1;
+            --accordion-bg: #e9e9e9;
+            --panel-bg: #f9f9f9;
+            --border-color: #dddddd;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --hover-highlight: #dcdcdc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía más limpia */
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--bg-container);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Botón de tema flotante o posicionado */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 15px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 25px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid transparent;
+            border-radius: var(--radius);
+            font-size: 16px;
+            box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
+        }
+
+        .accordion {
+            background-color: var(--accordion-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 20px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-bottom: 8px;
+            border-radius: var(--radius);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion:hover {
+            background-color: var(--hover-highlight);
+        }
+
+        .accordion::after {
+            content: '+';
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .accordion.active::after {
+            content: '-';
+            transform: rotate(180deg); /* Animación suave */
+        }
+
+        .panel {
+            padding: 0 20px;
+            background-color: var(--panel-bg);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            margin-bottom: 10px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            margin-top: -5px; /* Para unirlo visualmente al acordeón */
+        }
+
+        .panel ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .panel li {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+        }
+
+        .panel li:hover {
+            background-color: rgba(139, 0, 0, 0.1); /* Sutil rojo al pasar el mouse */
+        }
+
+        .panel li:last-child {
+            border-bottom: none;
+        }
+
+        .abbreviation {
+            font-weight: bold;
+            color: var(--accent-color);
+            background-color: rgba(139, 0, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️ Modo Claro</button>
+    
+    <h1>Orden y Lista de Libros</h1>
+
+    <input type="text" id="searchInput" onkeyup="filterBooks()" placeholder="Buscar libro o abreviación...">
+
+    <button class="accordion">Primera Lectura: Libros Históricos</button>
+    <div class="panel">
+        <ul>
+            <li><span>Génesis</span> <span class="abbreviation">Gn</span></li>
+            <li><span>Éxodo</span> <span class="abbreviation">Ex</span></li>
+            <li><span>Levítico</span> <span class="abbreviation">Lv</span></li>
+            <li><span>Números</span> <span class="abbreviation">Nm</span></li>
+            <li><span>Deuteronomio</span> <span class="abbreviation">Dt</span></li>
+            <li><span>Josué</span> <span class="abbreviation">Jos</span></li>
+            <li><span>Jueces</span> <span class="abbreviation">Jue</span></li>
+            <li><span>Rut</span> <span class="abbreviation">Rut</span></li>
+            <li><span>1 Samuel</span> <span class="abbreviation">1 S</span></li>
+            <li><span>2 Samuel</span> <span class="abbreviation">2 S</span></li>
+            <li><span>1 Reyes</span> <span class="abbreviation">1 Re</span></li>
+            <li><span>2 Reyes</span> <span class="abbreviation">2 Re</span></li>
+            <li><span>1 Crónicas</span> <span class="abbreviation">1 Cro</span></li>
+            <li><span>2 Crónicas</span> <span class="abbreviation">2 Cro</span></li>
+            <li><span>Esdras</span> <span class="abbreviation">Esd</span></li>
+            <li><span>Nehemías</span> <span class="abbreviation">Ne</span></li>
+            <li><span>Tobías</span> <span class="abbreviation">Tb</span></li>
+            <li><span>Judit</span> <span class="abbreviation">Jdt</span></li>
+            <li><span>Ester</span> <span class="abbreviation">Est</span></li>
+            <li><span>1 Macabeos</span> <span class="abbreviation">1 M</span></li>
+            <li><span>2 Macabeos</span> <span class="abbreviation">2 M</span></li>
+        </ul>
+    </div>
+
+    <button class="accordion">Segunda Lectura: Libros Proféticos</button>
+    <div class="panel">
+        <ul>
+            <li><span>Isaías</span> <span class="abbreviation">Is</span></li>
+            <li><span>Jeremías</span> <span class="abbreviation">Jr</span></li>
+            <li><span>Lamentaciones</span> <span class="abbreviation">Lm</span></li>
+            <li><span>Baruc</span> <span class="abbreviation">Ba</span></li>
+            <li><span>Ezequiel</span> <span class="abbreviation">Ez</span></li>
+            <li><span>Daniel</span> <span class="abbreviation">Dn</span></li>
+            <li><span>Oseas</span> <span class="abbreviation">Os</span></li>
+            <li><span>Joel</span> <span class="abbreviation">Jl</span></li>
+            <li><span>Amós</span> <span class="abbreviation">Am</span></li>
+            <li><span>Abdías</span> <span class="abbreviation">Ab</span></li>
+            <li><span>Jonás</span> <span class="abbreviation">Jon</span></li>
+            <li><span>Miqueas</span> <span class="abbreviation">Mi</span></li>
+            <li><span>Nahúm</span> <span class="abbreviation">Na</span></li>
+            <li><span>Habacuc</span> <span class="abbreviation">Ha</span></li>
+            <li><span>Sofonías</span> <span class="abbreviation">So</span></li>
+            <li><span>Ageo</span> <span class="abbreviation">Ag</span></li>
+            <li><span>Zacarías</span> <span class="abbreviation">Za</span></li>
+            <li><span>Malaquías</span> <span class="abbreviation">Ml</span></li>
+        </ul>
+    </div>
+
+    <button class="accordion">Tercera Lectura: Cartas </button>
+    <div class="panel">
+        <ul>
+            <li><span>Romanos</span> <span class="abbreviation">Rm</span></li>
+            <li><span>1 Corintios</span> <span class="abbreviation">1 Co</span></li>
+            <li><span>2 Corintios</span> <span class="abbreviation">2 Co</span></li>
+            <li><span>Gálatas</span> <span class="abbreviation">Ga</span></li>
+            <li><span>Efesios</span> <span class="abbreviation">Ef</span></li>
+            <li><span>Filipenses</span> <span class="abbreviation">Flp</span></li>
+            <li><span>Colosenses</span> <span class="abbreviation">Col</span></li>
+            <li><span>1 Tesalonicenses</span> <span class="abbreviation">1 Ts</span></li>
+            <li><span>2 Tesalonicenses</span> <span class="abbreviation">2 Ts</span></li>
+            <li><span>1 Timoteo</span> <span class="abbreviation">1 Tm</span></li>
+            <li><span>2 Timoteo</span> <span class="abbreviation">2 Tm</span></li>
+            <li><span>Tito</span> <span class="abbreviation">Tt</span></li>
+            <li><span>Filemón</span> <span class="abbreviation">Flm</span></li>
+            <li><span>Hebreos</span> <span class="abbreviation">Hb</span></li>
+            <li><span>Santiago</span> <span class="abbreviation">St</span></li>
+            <li><span>1 Pedro</span> <span class="abbreviation">1 P</span></li>
+            <li><span>2 Pedro</span> <span class="abbreviation">2 P</span></li>
+            <li><span>1 Juan</span> <span class="abbreviation">1 Jn</span></li>
+            <li><span>2 Juan</span> <span class="abbreviation">2 Jn</span></li>
+            <li><span>3 Juan</span> <span class="abbreviation">3 Jn</span></li>
+            <li><span>Judas</span> <span class="abbreviation">Jud</span></li>
+            <li><span>Apocalipsis</span> <span class="abbreviation">Ap</span></li>
+        </ul>
+    </div>
+
+    <button class="accordion">Evangelio</button>
+    <div class="panel">
+        <ul>
+            <li><span>Mateo</span> <span class="abbreviation">Mt</span></li>
+            <li><span>Marcos</span> <span class="abbreviation">Mc</span></li>
+            <li><span>Lucas</span> <span class="abbreviation">Lc</span></li>
+            <li><span>Juan</span> <span class="abbreviation">Jn</span></li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>Lucas Molina</p>
+    </footer>
+</div>
+
+<script>
+    // --- LÓGICA DE INTERFAZ (Acordeón y Tema) ---
+    
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var acc = document.getElementsByClassName("accordion");
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    });
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const btn = document.getElementById('themeBtn');
+        if (document.body.classList.contains('light-mode')) {
+            btn.textContent = "🌙 Modo Oscuro";
+        } else {
+            btn.textContent = "☀️ Modo Claro";
+        }
+    }
+
+    // --- LÓGICA DE BÚSQUEDA (CONSERVADA EXACTAMENTE) ---
+
+    /**
+     * Normaliza el texto a minúsculas y sin acentos.
+     */
+    const normalizeText = (text) => {
+        return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
+
+    /**
+     * Calcula la distancia de Levenshtein entre dos cadenas.
+     */
+    const levenshteinDistance = (s1, s2) => {
+        s1 = normalizeText(s1);
+        s2 = normalizeText(s2);
+
+        const costs = [];
+        for (let i = 0; i <= s1.length; i++) {
+            let lastValue = i;
+            for (let j = 0; j <= s2.length; j++) {
+                if (i === 0) {
+                    costs[j] = j;
+                } else {
+                    if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+            }
+            if (i > 0) costs[s2.length] = lastValue;
+        }
+        return costs[s2.length];
+    };
+
+    function filterBooks() {
+        let input = document.getElementById('searchInput');
+        let filter = normalizeText(input.value);
+        let accordions = document.getElementsByClassName('accordion');
+        let panels = document.getElementsByClassName('panel');
+
+        for (let i = 0; i < panels.length; i++) {
+            let panel = panels[i];
+            let accordion = accordions[i];
+            let items = panel.getElementsByTagName('li');
+            let found = false;
+
+            for (let j = 0; j < items.length; j++) {
+                let bookName = items[j].getElementsByTagName('span')[0].textContent;
+                let abbreviation = items[j].getElementsByTagName('span')[1].textContent;
+
+                let normalizedBookName = normalizeText(bookName);
+                let normalizedAbbreviation = normalizeText(abbreviation);
+                
+                // --- LÓGICA DE BÚSQUEDA MEJORADA ---
+                const threshold = normalizedBookName.length > 5 ? 2 : 1; 
+                
+                const isMatch = normalizedBookName.includes(filter) || 
+                                normalizedAbbreviation.includes(filter) ||
+                                levenshteinDistance(bookName, filter) <= threshold;
+
+                if (isMatch) {
+                    items[j].style.display = "";
+                    found = true;
+                } else {
+                    items[j].style.display = "none";
+                }
+            }
+
+            if (found) {
+                accordion.style.display = "";
+                panel.style.display = "";
+                if (!accordion.classList.contains('active')) {
+                    accordion.classList.add('active');
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            } else {
+                accordion.style.display = "none";
+                panel.style.display = "none";
+                if (accordion.classList.contains('active')) {
+                    accordion.classList.remove('active');
+                    panel.style.maxHeight = null;
+                }
+            }
+            
+            if (filter === "") {
+                 accordion.style.display = "";
+                 panel.style.display = "";
+                 if (accordion.classList.contains('active')) {
+                    accordion.classList.remove('active');
+                    panel.style.maxHeight = null;
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
